@@ -1,0 +1,43 @@
+#read in file
+refine.original <- read.csv("~/Trainig/refine-original.csv")
+view(refine.original)
+
+#create working data frame
+adf_wrk <- refine.original
+
+#verify
+class(refine_working)
+
+#clean company names
+adf_wrk$company[grepl("p", adf_wrk$company, ignore.case = TRUE)] <- "phillips"
+adf_wrk$company[grepl("t", adf_wrk$company, ignore.case = TRUE)] <- "van houten"
+adf_wrk$company[grepl("ak", adf_wrk$company, ignore.case = TRUE)] <- "akzo"
+adf_wrk$company[grepl("r", adf_wrk$company, ignore.case = TRUE)] <- "unilever"
+
+# Sort Company Name
+# Separate ProductCode & Number
+# Merge Mailing address
+# Decode Product Code
+# Create Binary Variables for Company and Product
+adf_final <- adf_wrk %>% 
+    arrange(company) %>%
+    separate(Product.code...number, c("ProdCode", "Number"), remove=TRUE) %>%
+    unite (mailad, address, city, country, sep=",", remove=TRUE) %>%
+    mutate(Product = ifelse(ProdCode == "p", "Smartphone", 
+                               ifelse(ProdCode == "v", "TV", 
+                               ifelse(ProdCode == "x", "Laptop", 
+                               ifelse(ProdCode == "q", "Tablet", NA))))) %>%
+    mutate(Company_phillips = ifelse(company == "phillips", 1, 0)) %>%
+    mutate(Company_azko = ifelse(company == "akzo", 1, 0)) %>%
+    mutate(Company_unilever = ifelse(company == "unilever", 1, 0)) %>%
+    mutate(Company_vanhouten = ifelse(company == "van houten", 1, 0)) %>%
+    mutate(product_smartphone = ifelse(ProdCode == "p", 1, 0))%>%
+    mutate(product_tv = ifelse(ProdCode == "v", 1, 0)) %>%
+    mutate(product_laptop = ifelse(ProdCode == "x", 1, 0)) %>%
+    mutate(product_tablet = ifelse(ProdCode == "q", 1, 0))
+
+#view the file
+View(adf_final)
+
+#write file
+write.csv(adf_final, file = "~/Training/adf_clean.csv")
