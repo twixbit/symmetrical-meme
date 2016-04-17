@@ -1,0 +1,42 @@
+#read in file
+titanicdf <- read.csv("~/Trainig/titanic3.csv")
+
+print only complete cases
+df %>% filter(complete.cases(.))
+
+NA   (missing	
+NULL (undefined
+Inf  (Infinite
+NaN  (Not a number
+
+#filter missing embarked row (Returns 3 rows)
+filter (tdf, embarked == "") 
+
+#Set null embarked rows to S
+tdf$embarked = ifelse(tdf$embarked == "", "S", tdf$embarked)
+
+#Find mean of Age
+AgeList <- tdf$age
+AgeMean <- mean(AgeList, na.rm = TRUE)
+print(AgeMean)
+
+#only example
+or summary(AgeList) prints
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+ 0.1667 21.0000 28.0000 29.8800 39.0000 80.0000     264 
+
+#Count of the number of rows in column Age which are NA
+filter (hold, is.na(age)) %>% nrow()
+
+#Populate missing Age values with mean
+tdf$age[which(is.na(tdf$age))] <- AgeMean
+
+#Fill missing boat values with NA
+tdf$boat[tdf$boat==""] <- NA
+
+#Create a new field has_cabin 1=Cabin present else 0
+tdf <- tdf %>% mutate(has_cabin = ifelse(cabin == "", 0, 1))
+
+#write file
+write.csv(tdf, file = "~/Trainig/tdf_clean.csv")
+
